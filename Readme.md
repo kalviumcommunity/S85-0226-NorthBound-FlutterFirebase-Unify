@@ -1,5 +1,6 @@
 # CampusHub: The Unified Student Engagement Platform :
 
+
 ## 🚩 The Problem: "The Digital Chaos of Campus Life"
 
 Currently, college ecosystems suffer from **information fragmentation**. Clubs and student communities operate in silos, leading to:
@@ -42,5 +43,6 @@ This project was conceptualized and built by:
 * **Nikunj Kohli**
 * **Shivang Gautam**
 * **Subhadeep Samanta**
+
 
 
