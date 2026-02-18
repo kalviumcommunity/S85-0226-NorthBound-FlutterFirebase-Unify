@@ -1,4 +1,4 @@
-# CampusHub: The Unified Student Engagement Platform
+# CampusHub: The Unified Student Engagement Platform :
 
 ## 🚩 The Problem: "The Digital Chaos of Campus Life"
 
@@ -42,4 +42,5 @@ This project was conceptualized and built by:
 * **Nikunj Kohli**
 * **Shivang Gautam**
 * **Subhadeep Samanta**
+
 
