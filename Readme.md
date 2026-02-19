@@ -1,4 +1,4 @@
-# CampusHub: The Unified Student Engagement Platform :
+# Unify: The Unified Student Engagement Platform :
 
 
 ## 🚩 The Problem: "The Digital Chaos of Campus Life"
@@ -14,7 +14,7 @@ Currently, college ecosystems suffer from **information fragmentation**. Clubs a
 
 ## 💡 The Solution: A Single Source of Truth
 
-**CampusHub** replaces the noise with a streamlined, "one-stop-shop" for everything happening on campus.
+**Unify** replaces the noise with a streamlined, "one-stop-shop" for everything happening on campus.
 
 * **For Students:** A personalized feed to discover events, register with one click, and maintain a digital portfolio of their participation.
 * **For Club Leads:** A powerful management suite to post announcements, track real-time registration counts, and broadcast updates instantly.
@@ -26,13 +26,13 @@ Currently, college ecosystems suffer from **information fragmentation**. Clubs a
 
 We bridge the gap between "frustration" and "function" using a robust, scalable architecture:
 
-| Feature | Technical Implementation |
-| --- | --- |
-| **Unified Interface** | Developed using **React.js** (Web) and **Flutter** (Mobile) for a seamless, cross-platform experience. |
-| **Real-time Sync** | **WebSockets/Django Channels** ensure that a "Sold Out" event or an emergency venue change is reflected instantly across all devices. |
-| **Secure Access** | A **3-Tier Role-Based Access Control (RBAC)** system built with **Django Rest Framework** to separate Admin, Organizer, and Student permissions. |
-| **Data Integrity** | **PostgreSQL** handles complex relationships between clubs, events, and attendees, while **Redis** manages high-speed caching for trending events. |
-| **Attendance** | Unique **QR Code generation** and scanning logic to automate check-ins and trigger automated certificate emails via **SMTP/AWS SES**. |
+| Feature               | Technical Implementation                                                                                                                                                                                    |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unified Interface** | Developed using **Flutter** for a seamless, cross-platform mobile experience across Android and iOS with a single codebase.                                                                                 |
+| **Real-time Sync**    | **Cloud Firestore** enables instant, real-time updates so changes like “Sold Out” events or venue updates reflect immediately across all devices.                                                           |
+| **Secure Access**     | A **3-Tier Role-Based Access Control (RBAC)** system implemented using **Firebase Authentication** and enforced through **Firestore Security Rules** to separate Admin, Organizer, and Student permissions. |
+| **Data Integrity**    | **Cloud Firestore (NoSQL)** manages structured relationships between users, events, and registrations with scalable, document-based architecture.                                                           |
+| **Attendance**        | Unique **QR Code generation** within the app to automate event check-ins and validate student participation records.                                                                                        |
 
 ---
 
