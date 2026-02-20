@@ -1,4 +1,4 @@
-package com.example.unify
+package com.northbound.unify
 
 import io.flutter.embedding.android.FlutterActivity
 
