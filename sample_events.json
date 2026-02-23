@@ -1,0 +1,68 @@
+[
+  {
+    "title": "Annual Spring Hackathon 2024",
+    "description": "Join us for the most anticipated tech event of the semester! The Annual Spring Hackathon brings together industry leaders, innovative researchers, and passionate students for a day of inspiration and networking.\n\nThis year's theme focuses on 'Building Tomorrow' and features keynote speakers from top tech firms, interactive workshops, and a project showcase where students can present their latest work to potential employers.",
+    "category": "TECH",
+    "date": "Oct 24",
+    "time": "10:00 AM - 6:00 PM",
+    "location": "Alpha Zone, Room 302",
+    "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuAZ6c_KmfwD4d5XYqtnVW0CAfSOyB_FnJeaP94RT8AQ7EKoCNj3QdD5WUBxkswo6_kpyeHgdTbJ_hilA4r5tnkhty5BE8JkBpzgmZh4YLKsk7a3wDKtWQDfs8xfvidqmEnp-LWTUDNKMab_CJdMbYEgdS5xTwpDCunan1lVtxbRl6oajeiShcGNoU6mJy7ycrbCeeMWXlyMtu_nl88oZuMl704YE5e-3xvjdEEDws9iUQGGoYA9BVZk-iOgIqVKw3UcuO04Yz2P2nE",
+    "organizer": "Computer Science Society",
+    "interestedCount": 142
+  },
+  {
+    "title": "Visual Arts Showcase",
+    "description": "Celebrate student creativity at our Annual Visual Arts Showcase. From paintings to digital art, explore diverse artistic expressions from talented students. Meet the artists and learn about their creative process.\n\nFeaturing works from photography, sculpture, digital design, and traditional mediums. All campus members welcome!",
+    "category": "ARTS",
+    "date": "Oct 26",
+    "time": "2:00 PM",
+    "location": "Beta Zone Gallery",
+    "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuBj3YuaWmd-vwgCNjLpUZ35e8vwzLzfo64SbHj-2AFHonNG0H5gCbcEFiuujUjb4UO-CDlJYI11rzs0vOGNC8EjQnaHhFFBa_VSaDTg-0jZWGmQWwqZFL-IGCgNrtL3V-OjT8aD5nghvcJsTCUdFhCEV9sHvv91r38fWv8ovv4IIcVnUG9OTYDfJFVkoq4aS3mAoTLvhOXd9cFhpEDjGDkEYkJ_h4w-VqXNUFliMYZubD9UCaf8uLDV857_LQBVI9bB6mQrPNKT_bk",
+    "organizer": "Arts & Culture Club",
+    "interestedCount": 87
+  },
+  {
+    "title": "Inter-Collegiate Frisbee Finals",
+    "description": "Watch the most exciting ultimate frisbee championship of the year! Cheer for your favorite teams as they compete in the final tournament. High energy, amazing plays, and great atmosphere guaranteed!\n\nFree snacks and drinks for attendees. Multiple teams from different colleges competing!",
+    "category": "SPORTS",
+    "date": "Oct 28",
+    "time": "4:30 PM",
+    "location": "Gamma Athletic Field",
+    "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCNH43FFiNCsqHGOrFeZTYGvLMeyftOGkt4646jAr4eW5W9k7-8Vi2gWdZRoYBR6VxgHtU29urbFgebxeoa4t53-VkfWa2InG-IXp4MVN3b9_T5X6-Q13cyw2G8CXa_BVqi9qdAcMokLgWIYkt6ofmQ-4RP8L7shlotRp5VpV1OXItIBoboUFIiH0fKE3vHKQN60ASZ8XjCedXgubJ527k4_Vtl03KziEJOkxOi_2pZS_WVeB15p8yBtBq2kmHUMmrFX2jbDKvw3vA",
+    "organizer": "Sports Commission",
+    "interestedCount": 156
+  },
+  {
+    "title": "Web Development Workshop Series",
+    "description": "Learn modern web development from industry experts! This comprehensive workshop series covers React, Node.js, and full-stack development. Perfect for beginners and intermediate developers.\n\nParticipants will build a real project and receive certificates upon completion.",
+    "category": "TECH",
+    "date": "Oct 30",
+    "time": "3:00 PM - 5:00 PM",
+    "location": "Delta Tech Lab",
+    "imageUrl": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800",
+    "organizer": "Web Dev Club",
+    "interestedCount": 234
+  },
+  {
+    "title": "Annual Sports Day",
+    "description": "The biggest sports festival of the year! Features various sports including basketball, volleyball, cricket, and relay races. Open to all students regardless of skill level.\n\nRegistrations now open! Form your team and compete for prizes and glory!",
+    "category": "SPORTS",
+    "date": "Nov 5",
+    "time": "9:00 AM - 6:00 PM",
+    "location": "Central Sports Complex",
+    "imageUrl": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800",
+    "organizer": "Athletics Department",
+    "interestedCount": 456
+  },
+  {
+    "title": "Music & Performance Night",
+    "description": "Enjoy amazing performances by student musicians, dancers, and artists! From classical to contemporary, from Indian to western music. A spectacular evening of entertainment.\n\nFree entry for all students. Refreshments will be served.",
+    "category": "ARTS",
+    "date": "Nov 8",
+    "time": "6:00 PM - 9:00 PM",
+    "location": "Main Auditorium",
+    "imageUrl": "https://images.unsplash.com/photo-1501612780353-7e5432e52e00?w=800",
+    "organizer": "Arts Club",
+    "interestedCount": 189
+  }
+]
