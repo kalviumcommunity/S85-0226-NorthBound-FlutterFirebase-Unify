@@ -9,11 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Firebase dependencies for Assignment 3.4
+  # Firebase dependencies
   firebase_core: ^3.0.0
   cloud_firestore: ^5.0.0
   firebase_auth: ^5.0.0
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.2.2
+  share_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -22,3 +24,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - sample_events.json
