@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:share_plus/share_plus.dart';
-import 'package:add_2_calendar/add_2_calendar.dart';
 import '../models/event_model.dart';
 import '../services/firebase_service.dart';
 
@@ -15,21 +14,30 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   
-  Event _createCalendarEvent(EventModel event) {
-    final now = DateTime.now();
-    // Simplified date parsing
-    final dayStr = event.date.replaceAll(RegExp(r'[^0-9]'), '');
-    final day = int.tryParse(dayStr) ?? now.day;
-    
-    final eventDate = DateTime(now.year, 10, day, 10); 
-
-    return Event(
-      title: event.title,
-      description: event.description,
-      location: event.location,
-      startDate: eventDate,
-      endDate: eventDate.add(const Duration(hours: 2)),
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
     );
+    if (picked != null) {
+      const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+      final formattedDate = "${picked.day} ${months[picked.month - 1]} ${picked.year}";
+      
+      // Log the selected date
+      print('Selected date: $formattedDate');
+
+      // Display a Snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Selected date: $formattedDate'),
+        ),
+      );
+    }
   }
 
   @override
@@ -234,19 +242,6 @@ class _DetailScreenState extends State<DetailScreen> {
               title: event.date,
               subtitle: "${event.time} (EDT)",
             ),
-            const SizedBox(height: 16),
-            _buildInfoCard(
-              icon: Icons.location_on,
-              title: event.location,
-              subtitle: "Main Campus Zone",
-              trailing: const Text(
-                "Info",
-                style: TextStyle(
-                  color: Color(0xFF241A7F),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             const SizedBox(height: 32),
             _buildOrganizerSection(event),
             const SizedBox(height: 32),
@@ -423,7 +418,7 @@ class _DetailScreenState extends State<DetailScreen> {
           child: Row(
             children: [
               GestureDetector(
-                onTap: () => Add2Calendar.addEvent2Cal(_createCalendarEvent(event)),
+                onTap: () => _selectDate(context),
                 child: Container(
                   width: 56,
                   height: 56,
