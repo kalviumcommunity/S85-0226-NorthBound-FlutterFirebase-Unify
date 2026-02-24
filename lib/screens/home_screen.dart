@@ -16,14 +16,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     const HomeContent(),
-    const Scaffold(body: Center(child: Text("Maps"))), // Placeholder for Maps
     const ProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true, // For floating effect if needed, but here it's fixed
+      extendBody: true,
       body: IndexedStack(
         index: _selectedIndex,
         children: _pages,
@@ -43,8 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(Icons.home_filled, 'Home', 0),
-              _buildNavItem(Icons.map_outlined, 'Maps', 1),
-              _buildNavItem(Icons.person_outline, 'Profile', 2),
+              _buildNavItem(Icons.person_outline, 'Profile', 1),
             ],
           ),
         ),
