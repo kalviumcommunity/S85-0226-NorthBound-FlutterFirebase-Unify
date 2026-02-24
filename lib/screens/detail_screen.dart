@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:share_plus/share_plus.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import '../models/event_model.dart';
 import '../services/firebase_service.dart';
 
@@ -13,6 +14,24 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  
+  Event _createCalendarEvent(EventModel event) {
+    final now = DateTime.now();
+    // Simplified date parsing
+    final dayStr = event.date.replaceAll(RegExp(r'[^0-9]'), '');
+    final day = int.tryParse(dayStr) ?? now.day;
+    
+    final eventDate = DateTime(now.year, 10, day, 10); 
+
+    return Event(
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      startDate: eventDate,
+      endDate: eventDate.add(const Duration(hours: 2)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<EventModel>(
@@ -403,48 +422,58 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
           child: Row(
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.shade200, width: 2),
+              GestureDetector(
+                onTap: () => Add2Calendar.addEvent2Cal(_createCalendarEvent(event)),
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey.shade200, width: 2),
+                  ),
+                  child: const Icon(Icons.calendar_month_outlined, color: Colors.grey),
                 ),
-                child: const Icon(Icons.event_note_outlined, color: Colors.grey),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: GestureDetector(
-                  onTap: () => FirebaseService().updateInterest(event.id),
-                  child: Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF241A7F),
-                      borderRadius: BorderRadius.circular(99),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF241A7F).withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
+                child: StreamBuilder<bool>(
+                  stream: FirebaseService().isUserCheckedIn(event.id),
+                  builder: (context, snapshot) {
+                    final isCheckedIn = snapshot.data ?? false;
+
+                    return GestureDetector(
+                      onTap: () => FirebaseService().toggleCheckIn(event.id, !isCheckedIn),
+                      child: Container(
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: isCheckedIn ? Colors.grey : const Color(0xFF241A7F),
+                          borderRadius: BorderRadius.circular(99),
+                          boxShadow: [
+                            BoxShadow(
+                              color: (isCheckedIn ? Colors.grey : const Color(0xFF241A7F)).withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.qr_code_scanner, color: Colors.white),
-                        SizedBox(width: 12),
-                        Text(
-                          "Check-In Now",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(isCheckedIn ? Icons.edit_calendar_outlined : Icons.qr_code_scanner, color: Colors.white),
+                            const SizedBox(width: 12),
+                            Text(
+                              isCheckedIn ? "Check-Out" : "Check-In Now",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  }
                 ),
               ),
             ],
