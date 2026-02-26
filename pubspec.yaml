@@ -16,6 +16,8 @@ dependencies:
   shared_preferences: ^2.2.2
   share_plus: ^9.0.0
   add_2_calendar: ^3.0.1
+  flutter_local_notifications: ^17.1.2
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
@@ -25,4 +27,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - sample_events.json
+    - assets/sample_events.json

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:share_plus/share_plus.dart';
 import '../models/event_model.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
+import 'package:intl/intl.dart';
 
 class DetailScreen extends StatefulWidget {
   final EventModel event;
@@ -15,18 +17,48 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   
   void _setReminder(String priority) {
-    // TODO: Implement notification logic
-    if (priority == 'high') {
-      // Implement high priority notification (app and phone)
-      print('High priority reminder set for ${widget.event.title}');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('High priority reminder set for ${widget.event.title}')),
+    String cleanTimeString = ''; // Declare here for enhanced logging
+    try {
+      final eventDate = DateTime.parse(widget.event.fullDate);
+      final timeString = widget.event.time.split(' - ')[0];
+
+      // Aggressive, multi-stage cleaning to definitively remove invisible characters.
+      cleanTimeString = timeString
+          .replaceAll(RegExp(r'[\s\u202F\u00A0]+'), ' ') // Normalize all space types to a single space
+          .replaceAll(RegExp(r'[^\x00-\x7F]'), '')      // Remove ALL non-ASCII characters
+          .trim();
+      
+      final format = DateFormat.jm('en_US'); // Force locale for AM/PM
+      final eventTime = format.parse(cleanTimeString);
+      
+      final scheduledTime = DateTime(
+        eventDate.year,
+        eventDate.month,
+        eventDate.day,
+        eventTime.hour,
+        eventTime.minute
+      ).subtract(const Duration(hours: 1));
+
+      NotificationService().scheduleNotification(
+        'Reminder: ${widget.event.title}',
+        'Starts in 1 hour at ${widget.event.location}',
+        scheduledTime,
+        priority,
       );
-    } else {
-      // Implement normal priority notification (app only)
-      print('Normal reminder set for ${widget.event.title}');
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Normal reminder set for ${widget.event.title}')),
+        SnackBar(content: Text('${priority == 'high' ? 'High priority' : 'Normal'} reminder set for ${widget.event.title}')),
+      );
+    } catch (e, s) {
+      print('--- Reminder Error ---');
+      print('EXCEPTION: $e');
+      print('ORIGINAL TIME STRING: "${widget.event.time}"');
+      print('CLEANED TIME STRING: "$cleanTimeString"');
+      print('CLEANED STRING CHAR CODES: ${cleanTimeString.codeUnits}');
+      print('STACK TRACE: $s');
+      print('----------------------');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not set reminder. Invalid time format.')),
       );
     }
   }

@@ -6,6 +6,7 @@ class EventModel {
   final String description;
   final String category;
   final String date;
+  final String fullDate;
   final String time;
   final String location;
   final String imageUrl;
@@ -18,6 +19,7 @@ class EventModel {
     required this.description,
     required this.category,
     required this.date,
+    required this.fullDate,
     required this.time,
     required this.location,
     required this.imageUrl,
@@ -33,6 +35,7 @@ class EventModel {
       description: data['description'] ?? '',
       category: data['category'] ?? 'TECH',
       date: data['date'] ?? '',
+      fullDate: data['fullDate'] ?? '',
       time: data['time'] ?? '',
       location: data['location'] ?? '',
       imageUrl: data['imageUrl'] ?? 'https://picsum.photos/400/300',
