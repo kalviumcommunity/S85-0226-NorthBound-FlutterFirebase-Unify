@@ -7,25 +7,41 @@ class SetupService {
 
   Future<void> uploadEvents() async {
     try {
-      final String response = await rootBundle.loadString('sample_events.json');
-      final data = await json.decode(response) as List;
+      // 1. Clear all existing events to ensure a clean slate.
+      final snapshot = await _db.collection('events').get();
+      final batch = _db.batch();
+      for (final doc in snapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+      print("✅ Existing events cleared successfully!");
 
-      WriteBatch batch = _db.batch();
+      // 2. Load the source JSON data.
+      final String response = await rootBundle.loadString('assets/sample_events.json');
+      final List<dynamic> data = json.decode(response);
 
+      WriteBatch newBatch = _db.batch();
+
+      // 3. Programmatically clean every event's time field before uploading.
       for (var eventData in data) {
-        // Use a consistent, unique ID to prevent duplicates if run multiple times
-        String docId = eventData['title'].toString().replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_').toLowerCase();
-        DocumentReference docRef = _db.collection('events').doc(docId);
-        batch.set(docRef, eventData, SetOptions(merge: true));
+        if (eventData['time'] is String) {
+          // Aggressive, multi-stage cleaning.
+          eventData['time'] = eventData['time']
+              .replaceAll(RegExp(r'[\s\u202F\u00A0]+'), ' ') // Normalize all space types
+              .replaceAll(RegExp(r'[^\x00-\x7F]'), '')      // Remove all non-ASCII chars
+              .trim();
+        }
+
+        DocumentReference docRef = _db.collection('events').doc();
+        newBatch.set(docRef, eventData);
       }
       
-      await batch.commit();
-      print("✅ Events uploaded/updated successfully!");
+      // 4. Commit the clean data to Firebase.
+      await newBatch.commit();
+      print("✅ New, clean events uploaded successfully!");
 
     } catch (e) {
-      // Catch and print errors instead of crashing the app
-      print("❌ Error uploading events: $e");
-      print("‼️ IMPORTANT: Have you updated your Firestore security rules as instructed?");
+      print("❌ Error setting up events: $e");
     }
   }
 }

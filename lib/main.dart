@@ -4,14 +4,14 @@ import 'firebase_options.dart';
 import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
 import 'services/firebase_service.dart';
+import 'services/notification_service.dart';
 import 'services/setup_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
-  // Uncomment the line below to upload sample events once, then comment it back
-  // await SetupService().uploadEvents();
+  await NotificationService().init();
+  await SetupService().uploadEvents(); // Re-enabled to overwrite corrupted Firebase data.
 
   runApp(const UnifyApp());
 }

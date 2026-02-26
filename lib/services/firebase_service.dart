@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/event_model.dart';
@@ -8,6 +10,26 @@ class FirebaseService {
 
   Stream<User?> get userStream => _auth.authStateChanges();
   String? get userId => _auth.currentUser?.uid;
+
+  Future<void> clearAllEvents() async {
+    final snapshot = await _db.collection('events').get();
+    final batch = _db.batch();
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
+
+  Future<void> addEventsFromJson() async {
+    final String response = await rootBundle.loadString('sample_event.json');
+    final data = await json.decode(response) as List;
+    final batch = _db.batch();
+    for (final eventData in data) {
+      final docRef = _db.collection('events').doc();
+      batch.set(docRef, eventData);
+    }
+    await batch.commit();
+  }
 
   Stream<List<EventModel>> getEvents() {
     return _db.collection('events').snapshots().map((snapshot) =>
