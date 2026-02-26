@@ -14,28 +14,19 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null) {
-      const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-      ];
-      final formattedDate = "${picked.day} ${months[picked.month - 1]} ${picked.year}";
-      
-      // Log the selected date
-      print('Selected date: $formattedDate');
-
-      // Display a Snackbar
+  void _setReminder(String priority) {
+    // TODO: Implement notification logic
+    if (priority == 'high') {
+      // Implement high priority notification (app and phone)
+      print('High priority reminder set for ${widget.event.title}');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Selected date: $formattedDate'),
-        ),
+        SnackBar(content: Text('High priority reminder set for ${widget.event.title}')),
+      );
+    } else {
+      // Implement normal priority notification (app only)
+      print('Normal reminder set for ${widget.event.title}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Normal reminder set for ${widget.event.title}')),
       );
     }
   }
@@ -417,16 +408,34 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
           child: Row(
             children: [
-              GestureDetector(
-                onTap: () => _selectDate(context),
+              PopupMenuButton<String>(
+                onSelected: _setReminder,
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'high',
+                    child: Text('High Priority'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'normal',
+                    child: Text('Normal'),
+                  ),
+                ],
                 child: Container(
-                  width: 56,
+                  width: 140,
                   height: 56,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey.shade200, width: 2),
+                     color: const Color(0xFF241A7F).withOpacity(0.1),
+                     borderRadius: BorderRadius.circular(99),
+                     border: Border.all(color: const Color(0xFF241A7F).withOpacity(0.2)),
                   ),
-                  child: const Icon(Icons.calendar_month_outlined, color: Colors.grey),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.notifications_active_outlined, color: Color(0xFF241A7F)),
+                      SizedBox(width: 8),
+                      Text("REMIND ME", style: TextStyle(color: Color(0xFF241A7F), fontWeight: FontWeight.bold)),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
