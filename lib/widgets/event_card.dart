@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import '../screens/detail_screen.dart';
-
+// This widget displays an event card with image and details,
+// and navigates to DetailScreen with event data when tapped.
 class EventCard extends StatelessWidget {
   final EventModel event;
   const EventCard({required this.event, super.key});
