@@ -40,7 +40,6 @@ class FirebaseService {
     return _db.collection('events').doc(eventId).snapshots().map((doc) => EventModel.fromFirestore(doc));
   }
 
-  // Updated Check-In / Check-Out Logic
   Future<void> toggleCheckIn(String eventId, bool isCheckingIn) async {
     final uid = userId;
     if (uid == null) return;
@@ -72,7 +71,6 @@ class FirebaseService {
         .map((doc) => doc.exists);
   }
 
-  // Saved Events logic
   Future<void> toggleSaveEvent(String eventId) async {
     final uid = userId;
     if (uid == null) return;
@@ -85,6 +83,28 @@ class FirebaseService {
     } else {
       await docRef.set({'savedAt': FieldValue.serverTimestamp()});
     }
+  }
+
+  Future<void> saveReminder(String eventId, String priority) async {
+    final uid = userId;
+    if (uid != null) {
+      await _db.collection('users').doc(uid).collection('reminders').doc(eventId).set({
+        'priority': priority,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    }
+  }
+
+  Stream<String?> getReminderStatus(String eventId) {
+    final uid = userId;
+    if (uid == null) return Stream.value(null);
+    return _db.collection('users').doc(uid).collection('reminders').doc(eventId)
+        .snapshots()
+        .map((doc) {
+      if (!doc.exists) return null;
+      final data = doc.data();
+      return data?['priority'] as String?;
+    });
   }
 
   Stream<bool> isEventSaved(String eventId) {
