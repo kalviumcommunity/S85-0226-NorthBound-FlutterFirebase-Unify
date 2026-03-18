@@ -25,10 +25,9 @@ class SetupService {
       // 3. Programmatically clean every event's time field before uploading.
       for (var eventData in data) {
         if (eventData['time'] is String) {
-          // Aggressive, multi-stage cleaning.
           eventData['time'] = eventData['time']
-              .replaceAll(RegExp(r'[\s\u202F\u00A0]+'), ' ') // Normalize all space types
-              .replaceAll(RegExp(r'[^\x00-\x7F]'), '')      // Remove all non-ASCII chars
+              .replaceAll('\u202F', ' ') // Narrow No-Break Space
+              .replaceAll('\u00A0', ' ') // Standard No-Break Space
               .trim();
         }
 
