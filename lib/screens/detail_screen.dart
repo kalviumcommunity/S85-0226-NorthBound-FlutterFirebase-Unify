@@ -15,45 +15,29 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-
   void _setReminder(String priority) {
     try {
-      // 1. Parse Date - Force it to Local Time
+      // 1. Parse Date and Time
       final eventDate = DateTime.parse(widget.event.fullDate).toLocal();
-
-      // 2. Extract Time
-      final timePart = widget.event.time.split(' - ')[0]
+      final timePart = widget.event.time
+          .split(' - ')[0]
           .replaceAll('\u202F', ' ')
           .replaceAll('\u00A0', ' ')
           .trim();
 
-      // 3. Parse Time with explicit AM/PM support
       final eventTime = DateFormat("h:mm a").parseLoose(timePart);
-
-      // 4. Combine
-      final eventDateTime = DateTime(
-          eventDate.year,
-          eventDate.month,
-          eventDate.day,
-          eventTime.hour,
-          eventTime.minute
-      );
+      final eventDateTime = DateTime(eventDate.year, eventDate.month,
+          eventDate.day, eventTime.hour, eventTime.minute);
 
       final now = DateTime.now();
 
-      // DEBUG: Look at your terminal for these two lines!
-      debugPrint('DEBUG: Event Time Calculated: $eventDateTime');
-      debugPrint('DEBUG: Current Phone Time: $now');
-
-      // 5. Logic for Reminder
+      // Calculate system reminder time (1 hour before)
       DateTime scheduledTime = eventDateTime.subtract(const Duration(hours: 1));
-
-      // If event is in future, but starts in < 1 hour, set for 1 min from now
       if (scheduledTime.isBefore(now) && eventDateTime.isAfter(now)) {
         scheduledTime = now.add(const Duration(minutes: 1));
       }
 
-      // 6. Final check
+      // Check if event already passed
       if (eventDateTime.isBefore(now)) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -62,16 +46,37 @@ class _DetailScreenState extends State<DetailScreen> {
         return;
       }
 
-      NotificationService().scheduleNotification(
-        'Reminder: ${widget.event.title}',
-        'Starts soon at ${widget.event.location}',
-        scheduledTime,
-        priority,
-      );
+      // --- NOTIFICATION LOGIC ---
+
+      // A. In-App Notification (For BOTH Normal and High Priority)
+      final dateStr = DateFormat('MMM d').format(eventDateTime);
+      final timeStr = DateFormat('h:mm a').format(eventDateTime);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${priority == 'high' ? 'High priority' : 'Normal'} reminder set.')),
+        SnackBar(
+          backgroundColor: const Color(0xFF241A7F),
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'BE READY FOR THIS EVENT AT $dateStr, $timeStr',
+            style:
+            const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          duration: const Duration(seconds: 4),
+        ),
       );
+
+      // B. System/Phone Notification (ONLY for High Priority)
+      if (priority == 'high') {
+        NotificationService().scheduleNotification(
+          'Reminder: ${widget.event.title}',
+          'Starts soon at ${widget.event.location}',
+          scheduledTime,
+          priority,
+        );
+      }
+
+      // C. Save to Firebase to lock the selection and update UI
+      FirebaseService().saveReminder(widget.event.id, priority);
     } catch (e) {
       debugPrint('Reminder Error: $e');
     }
@@ -115,7 +120,8 @@ class _DetailScreenState extends State<DetailScreen> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           color: Colors.white.withOpacity(0.8),
-          padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 8, 16, 16),
+          padding: EdgeInsets.fromLTRB(
+              16, MediaQuery.of(context).padding.top + 8, 16, 16),
           child: Row(
             children: [
               _buildIconButton(
@@ -139,7 +145,8 @@ class _DetailScreenState extends State<DetailScreen> {
                 context,
                 Icons.share_outlined,
                 onTap: () {
-                  Share.share('Check out this event: ${event.title}\nAt ${event.location} on ${event.date}');
+                  Share.share(
+                      'Check out this event: ${event.title}\nAt ${event.location} on ${event.date}');
                 },
               ),
               const SizedBox(width: 8),
@@ -150,11 +157,11 @@ class _DetailScreenState extends State<DetailScreen> {
                     return _buildIconButton(
                       context,
                       isSaved ? Icons.bookmark : Icons.bookmark_border,
-                      iconColor: isSaved ? const Color(0xFF241A7F) : Colors.black87,
+                      iconColor:
+                      isSaved ? const Color(0xFF241A7F) : Colors.black87,
                       onTap: () => FirebaseService().toggleSaveEvent(event.id),
                     );
-                  }
-              ),
+                  }),
             ],
           ),
         ),
@@ -162,29 +169,32 @@ class _DetailScreenState extends State<DetailScreen> {
     ),
   );
 
-  Widget _buildIconButton(BuildContext context, IconData icon, {VoidCallback? onTap, Color iconColor = Colors.black87}) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.shade100),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  Widget _buildIconButton(BuildContext context, IconData icon,
+      {VoidCallback? onTap, Color iconColor = Colors.black87}) =>
+      GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.grey.shade100),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Icon(icon, color: iconColor, size: 20),
-    ),
-  );
+          child: Icon(icon, color: iconColor, size: 20),
+        ),
+      );
 
   Widget _buildHeroImage(BuildContext context, EventModel event) => Padding(
-    padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 80, 16, 0),
+    padding: EdgeInsets.fromLTRB(
+        16, MediaQuery.of(context).padding.top + 80, 16, 0),
     child: Stack(
       children: [
         Container(
@@ -341,7 +351,8 @@ class _DetailScreenState extends State<DetailScreen> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   Text(
                     subtitle,
@@ -391,7 +402,8 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
               Text(
                 event.organizer,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style:
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ],
           ),
@@ -403,10 +415,12 @@ class _DetailScreenState extends State<DetailScreen> {
             foregroundColor: const Color(0xFF241A7F),
             elevation: 0,
             side: const BorderSide(color: Color(0xFF241A7F)),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(99)),
             padding: const EdgeInsets.symmetric(horizontal: 20),
           ),
-          child: const Text("Follow", style: TextStyle(fontWeight: FontWeight.bold)),
+          child:
+          const Text("Follow", style: TextStyle(fontWeight: FontWeight.bold)),
         ),
       ],
     ),
@@ -448,43 +462,72 @@ class _DetailScreenState extends State<DetailScreen> {
       left: 0,
       right: 0,
       child: Container(
-        padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.of(context).padding.bottom + 24),
+        padding: EdgeInsets.fromLTRB(
+            24, 24, 24, MediaQuery.of(context).padding.bottom + 24),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.9),
           border: Border(top: BorderSide(color: Colors.grey.shade200)),
         ),
         child: Row(
           children: [
-            PopupMenuButton<String>(
-              onSelected: _setReminder,
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                const PopupMenuItem<String>(
-                  value: 'high',
-                  child: Text('High Priority'),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'normal',
-                  child: Text('Normal'),
-                ),
-              ],
-              child: Container(
-                width: 140,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF241A7F).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(99),
-                  border: Border.all(color: const Color(0xFF241A7F).withOpacity(0.2)),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.notifications_active_outlined, color: Color(0xFF241A7F)),
-                    SizedBox(width: 8),
-                    Text("REMIND ME", style: TextStyle(color: Color(0xFF241A7F), fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-            ),
+            StreamBuilder<String?>(
+                stream: FirebaseService().getReminderStatus(event.id),
+                builder: (context, snapshot) {
+                  final currentPriority = snapshot.data;
+                  return PopupMenuButton<String>(
+                    onSelected: _setReminder,
+                    itemBuilder: (BuildContext context) =>
+                    <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
+                        value: 'normal',
+                        enabled: currentPriority == null,
+                        child: Text(currentPriority != null
+                            ? 'Normal Set ✓'
+                            : 'Normal Priority'),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'high',
+                        enabled: currentPriority != 'high',
+                        child: Text(currentPriority == 'high'
+                            ? 'High Set ✓'
+                            : 'High Priority'),
+                      ),
+                    ],
+                    child: Container(
+                      width: 140,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: currentPriority != null
+                            ? Colors.green.withOpacity(0.1)
+                            : const Color(0xFF241A7F).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(99),
+                        border: Border.all(
+                            color: currentPriority != null
+                                ? Colors.green
+                                : const Color(0xFF241A7F).withOpacity(0.2)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                              currentPriority != null
+                                  ? Icons.notifications_active
+                                  : Icons.notifications_active_outlined,
+                              color: currentPriority != null
+                                  ? Colors.green
+                                  : const Color(0xFF241A7F)),
+                          const SizedBox(width: 8),
+                          Text(currentPriority?.toUpperCase() ?? "REMIND ME",
+                              style: TextStyle(
+                                  color: currentPriority != null
+                                      ? Colors.green
+                                      : const Color(0xFF241A7F),
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
             const SizedBox(width: 16),
             Expanded(
               child: StreamBuilder<bool>(
@@ -492,17 +535,23 @@ class _DetailScreenState extends State<DetailScreen> {
                 builder: (context, snapshot) {
                   final isCheckedIn = snapshot.data ?? false;
                   return ElevatedButton(
-                    onPressed: () => FirebaseService().toggleCheckIn(event.id, !isCheckedIn),
+                    onPressed: () =>
+                        FirebaseService().toggleCheckIn(event.id, !isCheckedIn),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isCheckedIn ? Colors.green : const Color(0xFF241A7F),
+                      backgroundColor:
+                      isCheckedIn ? Colors.green : const Color(0xFF241A7F),
                       foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 56),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(99)),
                       elevation: 0,
                     ),
                     child: Text(
                       isCheckedIn ? "CHECKED IN" : "CHECK IN",
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1),
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1),
                     ),
                   );
                 },
