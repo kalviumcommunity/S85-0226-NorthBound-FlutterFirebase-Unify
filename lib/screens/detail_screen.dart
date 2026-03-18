@@ -17,22 +17,20 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
 
   void _setReminder(String priority) {
-    String cleanTimeString = '';
     try {
-      final eventDate = DateTime.parse(widget.event.fullDate);
+      // 1. Parse Date - Force it to Local Time
+      final eventDate = DateTime.parse(widget.event.fullDate).toLocal();
 
-      // Get the start time (e.g., "2:00 PM") from the range "2:00 PM - 4:00 PM"
-      final timeString = widget.event.time.split(' - ')[0];
-
-      // Replace common non-standard spaces that cause intl parsing errors
-      cleanTimeString = timeString
-          .replaceAll('\u202F', ' ') // Narrow No-Break Space
-          .replaceAll('\u00A0', ' ') // No-Break Space
+      // 2. Extract Time
+      final timePart = widget.event.time.split(' - ')[0]
+          .replaceAll('\u202F', ' ')
+          .replaceAll('\u00A0', ' ')
           .trim();
 
-      // Use DateFormat to parse the string into a DateTime object
-      final eventTime = DateFormat("h:mm a").parseLoose(cleanTimeString);
+      // 3. Parse Time with explicit AM/PM support
+      final eventTime = DateFormat("h:mm a").parseLoose(timePart);
 
+      // 4. Combine
       final eventDateTime = DateTime(
           eventDate.year,
           eventDate.month,
@@ -41,17 +39,22 @@ class _DetailScreenState extends State<DetailScreen> {
           eventTime.minute
       );
 
-      // Logic: Set reminder for 1 hour before, BUT if that's in the past,
-      // set it for "now" or 5 minutes from now so the user still gets it.
+      final now = DateTime.now();
+
+      // DEBUG: Look at your terminal for these two lines!
+      debugPrint('DEBUG: Event Time Calculated: $eventDateTime');
+      debugPrint('DEBUG: Current Phone Time: $now');
+
+      // 5. Logic for Reminder
       DateTime scheduledTime = eventDateTime.subtract(const Duration(hours: 1));
 
-      if (scheduledTime.isBefore(DateTime.now())) {
-        // If the event starts in less than an hour, set the reminder for 1 minute from now
-        scheduledTime = DateTime.now().add(const Duration(minutes: 1));
+      // If event is in future, but starts in < 1 hour, set for 1 min from now
+      if (scheduledTime.isBefore(now) && eventDateTime.isAfter(now)) {
+        scheduledTime = now.add(const Duration(minutes: 1));
       }
 
-      // Final check: If the event has already started/passed completely
-      if (eventDateTime.isBefore(DateTime.now())) {
+      // 6. Final check
+      if (eventDateTime.isBefore(now)) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('This event has already started.')),
@@ -66,18 +69,11 @@ class _DetailScreenState extends State<DetailScreen> {
         priority,
       );
 
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${priority == 'high' ? 'High priority' : 'Normal'} reminder set.')),
       );
-    } catch (e, s) {
-      debugPrint('--- Reminder Error ---');
-      debugPrint('EXCEPTION: $e');
-      debugPrint('STACK TRACE: $s');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not set reminder. Check time format.')),
-      );
+    } catch (e) {
+      debugPrint('Reminder Error: $e');
     }
   }
 
