@@ -4,6 +4,16 @@ import '../screens/detail_screen.dart';
 // This widget displays an event card with image and details,
 // and navigates to DetailScreen with event data when tapped.
 // A reusable UI card widget that displays event details such as image, title, date, and location.
+/// A reusable card widget that displays event information.
+///
+/// This widget shows:
+/// - Event image
+/// - Category tag
+/// - Title
+/// - Date & time
+/// - Location
+///
+/// On tap, it navigates to [DetailScreen] with the selected event.
 class EventCard extends StatelessWidget {
   final EventModel event;
   const EventCard({required this.event, super.key});
