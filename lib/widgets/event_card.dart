@@ -17,9 +17,13 @@ import '../screens/detail_screen.dart';
 class EventCard extends StatelessWidget {
   final EventModel event;
   const EventCard({required this.event, super.key});
-
+/// This widget is designed with a flexible layout structure,
+/// allowing it to adapt to different screen sizes such as mobile and tablet.
   @override
   Widget build(BuildContext context) {
+    // The layout uses flexible sizing (double.infinity, Expanded)
+  // to adapt across different screen sizes and prevent overflow.
+
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
