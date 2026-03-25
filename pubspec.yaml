@@ -28,3 +28,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/sample_events.json
+    - assets/user.webp

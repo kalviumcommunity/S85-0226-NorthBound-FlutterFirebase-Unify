@@ -143,8 +143,16 @@ class FirebaseService {
   Future<void> login(String email, String password) async =>
       await _auth.signInWithEmailAndPassword(email: email, password: password);
 
-  Future<void> signUp(String email, String password) async =>
-      await _auth.createUserWithEmailAndPassword(email: email, password: password);
+  Future<void> signUp(String email, String password, {String? name, String? phone}) async {
+    final cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    if (name != null || phone != null) {
+      await _db.collection('users').doc(cred.user?.uid).set({
+        if (name != null) 'name': name,
+        if (phone != null) 'phone': phone,
+        'email': email,
+      }, SetOptions(merge: true));
+    }
+  }
 
   Future<void> logout() async => await _auth.signOut();
 }
