@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
 
+
+// AuthScreen handles user registration (Sign Up)
+// It collects user details and sends them to Firebase Authentication
 // This screen handles both Login and Sign Up functionality
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});

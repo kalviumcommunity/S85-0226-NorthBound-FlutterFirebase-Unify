@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
 import 'home_screen.dart';
-
+// LoginScreen handles user authentication (Login)
+// It verifies user credentials using Firebase Authentication
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
-
+// Stateful widget to manage login form and UI state
 class _LoginScreenState extends State<LoginScreen> {
   final _email = TextEditingController();
   final _pass = TextEditingController();
