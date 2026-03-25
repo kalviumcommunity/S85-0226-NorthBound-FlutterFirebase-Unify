@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/auth_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
 import 'services/firebase_service.dart';
 import 'services/notification_service.dart';
 import 'services/setup_service.dart';
@@ -40,6 +41,9 @@ class UnifyApp extends StatelessWidget {
           titleLarge: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
       ),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+      },
       home: StreamBuilder(
         stream: FirebaseService().userStream,
         builder: (context, snapshot) {

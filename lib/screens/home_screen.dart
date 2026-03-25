@@ -4,6 +4,8 @@ import '../models/event_model.dart';
 import '../widgets/event_card.dart';
 import 'profile_screen.dart';
 import 'notifications_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -116,70 +118,91 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  Widget _buildHeader() => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF241A7F).withOpacity(0.1), width: 2),
-                image: const DecorationImage(
-                  image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuCXaHZSNGxvDB5yoh6v6MsoZ-rQkb8W9NQqsXy74UZ-BVJRyXP_YDKhMnbGKNiMgQohQijyKSBJTJXoWtncLERE1GtjxdGXBFeLOUwbyM2PIauUlNpKq_Tna-p68wDsoQsEwR0PzDMr75AAtf1A5GtE7SQIJgPiG10nJgcvY9RmVraRAmL3y5X7hKf6lQ5sJ3bkG9Rz_7V5vvOeqmPpyNKHCCtaTDwVSDMsdRudZwXgIQw1BcfjwvwBGKwaMR7iYZhPxkw9pg5x74M'),
-                  fit: BoxFit.cover,
+  Widget _buildHeader() => FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      future: FirebaseAuth.instance.currentUser != null
+          ? FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .get()
+          : null,
+      builder: (context, snapshot) {
+        final user = FirebaseAuth.instance.currentUser;
+
+        String name = user?.displayName ?? '';
+
+        if (snapshot.hasData && snapshot.data!.exists) {
+          final data = snapshot.data!.data();
+          if (data != null) {
+            name = data['name'] ?? name;
+          }
+        }
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFF241A7F).withOpacity(0.1), width: 2),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/user.webp'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "WELCOME BACK",
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                      letterSpacing: 1.2,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "WELCOME BACK",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                        letterSpacing: 1.2,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "Hello, Alex",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF241A7F),
+                    Text(
+                      "Hello, ${name.isNotEmpty ? name : 'User'}",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF241A7F),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade100),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.notifications_none, color: Colors.black87),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+                  },
+                ),
               ),
-              child: IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.black87),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()));
-                },
-              ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      },
+    );
 
   Widget _buildSearchBar() => SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
