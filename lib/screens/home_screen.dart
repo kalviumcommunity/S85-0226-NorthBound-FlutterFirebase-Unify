@@ -153,6 +153,7 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                 ),
               ),
+              
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
