@@ -129,7 +129,6 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildClickableOption(BuildContext context, {required IconData icon, required String title, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
