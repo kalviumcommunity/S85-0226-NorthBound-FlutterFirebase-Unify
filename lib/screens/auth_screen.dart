@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
-
+// Sign Up working properly 
 
 // AuthScreen handles user registration (Sign Up)
 // It collects user details and sends them to Firebase Authentication
