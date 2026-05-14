@@ -1,4 +1,3 @@
-﻿class Task337Config {
+class Task337Config {
   static const bool featureEnabled = false;
 }
-
