@@ -1,0 +1,1 @@
+Firebase integration via FlutterFire CLI is already set up. All required configuration files have been generated, and the app is properly connected to the Firebase project.
